@@ -485,7 +485,7 @@ class FlutterMentionsState extends State<FlutterMentions> {
                         child: SizedBox(
                             width: 25,
                             height: 25,
-                            child: CircularProgressIndicator()))),
+                            child: CircularProgressIndicator(strokeWidth: 2)))),
                 child: ValueListenableBuilder(
                   valueListenable: showSuggestions,
                   builder: (BuildContext context, bool show, Widget? child) {
