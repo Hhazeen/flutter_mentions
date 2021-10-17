@@ -254,7 +254,8 @@ class FlutterMentionsState extends State<FlutterMentions> {
   ValueNotifier<bool> showSuggestions = ValueNotifier(false);
   LengthMap? _selectedMention;
   String _pattern = '';
-  final ObservableList<Map<String, dynamic>> listData = ObservableList<Map<String, dynamic>>();
+  final ObservableList<Map<String, dynamic>> listData =
+      ObservableList<Map<String, dynamic>>();
   Timer? timer;
   Observable<bool> showLoading = Observable(false);
 
@@ -392,13 +393,14 @@ class FlutterMentionsState extends State<FlutterMentions> {
       widget.fetchDataOnSearchTextChanged(str.substring(1)).then((value) {
         listData.addAll(value);
         changeLoadingState(false);
-        controller!.mapping = mapToAnotation();
+        controller!.mapping.addAll(mapToAnotation());
         return value;
       });
     });
   }
 
-  void changeLoadingState(bool newValue) => runInAction(() => showLoading.value = newValue);
+  void changeLoadingState(bool newValue) =>
+      runInAction(() => showLoading.value = newValue);
 
   @override
   void initState() {
@@ -450,45 +452,49 @@ class FlutterMentionsState extends State<FlutterMentions> {
             ? Alignment.bottomCenter
             : Alignment.topCenter,
         closeDuration: Duration(milliseconds: 500),
-        portal: Observer(builder: (context) => Visibility(
-          visible: !showLoading.value,
-            replacement: Container(
-              decoration:
-              widget.suggestionListDecoration ?? BoxDecoration(color: Colors.white),
-              height: 70,
-              width: double.infinity,
-              child: Center(
-                child: SizedBox(
-                  width: 40,
-                  height: 40,
-                  child: CircularProgressIndicator(),
-                )
-              ),
-            ),
-            child: ValueListenableBuilder(
-          valueListenable: showSuggestions,
-          builder: (BuildContext context, bool show, Widget? child) {
-            return show && !widget.hideSuggestionList
-                ? Observer(builder: (context) => OptionList(
-              suggestionListHeight: widget.suggestionListHeight,
-              suggestionBuilder: list.suggestionBuilder,
-              suggestionListDecoration: widget.suggestionListDecoration,
-              data: listData.where((element) {
-                final ele = element['display'].toLowerCase();
-                final str = _selectedMention!.str
-                    .toLowerCase()
-                    .replaceAll(RegExp(_pattern), '');
+        portal: Observer(
+            builder: (context) => Visibility(
+                visible: !showLoading.value,
+                replacement: Container(
+                    decoration: widget.suggestionListDecoration ??
+                        BoxDecoration(color: Colors.white),
+                    height: 50,
+                    width: double.infinity,
+                    child: Center(
+                        child: SizedBox(
+                            width: 25,
+                            height: 25,
+                            child: CircularProgressIndicator()))),
+                child: ValueListenableBuilder(
+                  valueListenable: showSuggestions,
+                  builder: (BuildContext context, bool show, Widget? child) {
+                    return show && !widget.hideSuggestionList
+                        ? Observer(
+                            builder: (context) => OptionList(
+                                  suggestionListHeight:
+                                      widget.suggestionListHeight,
+                                  suggestionBuilder: list.suggestionBuilder,
+                                  suggestionListDecoration:
+                                      widget.suggestionListDecoration,
+                                  data: listData.where((element) {
+                                    final ele =
+                                        element['display'].toLowerCase();
+                                    final str = _selectedMention!.str
+                                        .toLowerCase()
+                                        .replaceAll(RegExp(_pattern), '');
 
-                return ele == str ? false : ele.contains(str);
-              }).toList(),
-              onTap: (value) {
-                addMention(value, list);
-                showSuggestions.value = false;
-              },
-            ))
-                : Container();
-          },
-        ))),
+                                    return ele == str
+                                        ? false
+                                        : ele.contains(str);
+                                  }).toList(),
+                                  onTap: (value) {
+                                    addMention(value, list);
+                                    showSuggestions.value = false;
+                                  },
+                                ))
+                        : Container();
+                  },
+                ))),
         child: Row(
           children: [
             ...widget.leading,
