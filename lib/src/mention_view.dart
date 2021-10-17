@@ -3,6 +3,7 @@ part of flutter_mentions;
 class FlutterMentions extends StatefulWidget {
   FlutterMentions({
     required this.mentions,
+    required this.fetchDataOnSearchTextChanged,
     Key? key,
     this.defaultText,
     this.suggestionPosition = SuggestionPosition.Bottom,
@@ -181,6 +182,9 @@ class FlutterMentions extends StatefulWidget {
   /// {@macro flutter.widgets.editableText.onSubmitted}
   final ValueChanged<String>? onSubmitted;
 
+  final Future<List<Map<String, dynamic>>> Function(String)
+      fetchDataOnSearchTextChanged;
+
   /// If false the text field is "disabled": it ignores taps and its
   /// [decoration] is rendered in grey.
   ///
@@ -250,6 +254,8 @@ class FlutterMentionsState extends State<FlutterMentions> {
   ValueNotifier<bool> showSuggestions = ValueNotifier(false);
   LengthMap? _selectedMention;
   String _pattern = '';
+  final ObservableList<Map<String, dynamic>> listData = ObservableList<Map<String, dynamic>>();
+  Timer? timer;
 
   Map<String, Annotation> mapToAnotation() {
     final data = <String, Annotation>{};
@@ -368,6 +374,24 @@ class FlutterMentionsState extends State<FlutterMentions> {
 
       widget.onSearchChanged!(str[0], str.substring(1));
     }
+
+    if (_selectedMention?.str != null) {
+      if (timer != null) {
+        timer!.cancel();
+      }
+      timer = Timer(Duration(milliseconds: 750), updateData);
+    }
+  }
+
+  void updateData() {
+    setState(() {
+      final str = _selectedMention!.str.toLowerCase();
+      listData.clear();
+      widget.fetchDataOnSearchTextChanged(str.substring(1)).then((value) {
+        listData.addAll(value);
+        return value;
+      });
+    });
   }
 
   @override
@@ -423,23 +447,23 @@ class FlutterMentionsState extends State<FlutterMentions> {
           valueListenable: showSuggestions,
           builder: (BuildContext context, bool show, Widget? child) {
             return show && !widget.hideSuggestionList
-                ? OptionList(
-                    suggestionListHeight: widget.suggestionListHeight,
-                    suggestionBuilder: list.suggestionBuilder,
-                    suggestionListDecoration: widget.suggestionListDecoration,
-                    data: list.data.where((element) {
-                      final ele = element['display'].toLowerCase();
-                      final str = _selectedMention!.str
-                          .toLowerCase()
-                          .replaceAll(RegExp(_pattern), '');
+                ? Observer(builder: (context) => OptionList(
+              suggestionListHeight: widget.suggestionListHeight,
+              suggestionBuilder: list.suggestionBuilder,
+              suggestionListDecoration: widget.suggestionListDecoration,
+              data: listData.where((element) {
+                final ele = element['display'].toLowerCase();
+                final str = _selectedMention!.str
+                    .toLowerCase()
+                    .replaceAll(RegExp(_pattern), '');
 
-                      return ele == str ? false : ele.contains(str);
-                    }).toList(),
-                    onTap: (value) {
-                      addMention(value, list);
-                      showSuggestions.value = false;
-                    },
-                  )
+                return ele == str ? false : ele.contains(str);
+              }).toList(),
+              onTap: (value) {
+                addMention(value, list);
+                showSuggestions.value = false;
+              },
+            ))
                 : Container();
           },
         ),

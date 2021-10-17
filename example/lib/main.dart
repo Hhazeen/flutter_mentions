@@ -50,6 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Container(
             child: FlutterMentions(
               key: key,
+              fetchDataOnSearchTextChanged: fetchData,
               suggestionPosition: SuggestionPosition.Top,
               maxLines: 5,
               minLines: 1,
@@ -60,37 +61,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     style: TextStyle(
                       color: Colors.amber,
                     ),
-                    data: [
-                      {
-                        'id': '61as61fsa',
-                        'display': 'fayeedP',
-                        'full_name': 'Fayeed Pawaskar',
-                        'photo':
-                            'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
-                      },
-                      {
-                        'id': '61asasgasgsag6a',
-                        'display': 'khaled',
-                        'full_name': 'DJ Khaled',
-                        'style': TextStyle(color: Colors.purple),
-                        'photo':
-                            'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
-                      },
-                      {
-                        'id': 'asfgasga41',
-                        'display': 'markT',
-                        'full_name': 'Mark Twain',
-                        'photo':
-                            'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
-                      },
-                      {
-                        'id': 'asfsaf451a',
-                        'display': 'JhonL',
-                        'full_name': 'Jhon Legend',
-                        'photo':
-                            'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
-                      },
-                    ],
                     matchAll: false,
                     suggestionBuilder: (data) {
                       return Container(
@@ -134,4 +104,51 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+
+  Future<List<Map<String, dynamic>>> fetchData(String text)async{
+    await Future.delayed(Duration(seconds: 1));
+    print("Hello");
+    if(text.isNotEmpty){
+      if(data1.any((element) => (element["display"] as String).toLowerCase().contains(text.toLowerCase())))
+        return data1;
+      else if(data2.any((element) => (element["display"] as String).toLowerCase().contains(text.toLowerCase())))
+        return data2;
+    }
+    return [];
+  }
 }
+
+List<Map<String, dynamic>> data1 = [
+  {
+    'id': '61as61fsa',
+    'display': 'Hamza',
+    'full_name': 'Fayeed Pawaskar',
+    'photo':
+    'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
+  },
+  {
+    'id': '61asasgasgsag6a',
+    'display': 'Hamza',
+    'full_name': 'DJ Khaled',
+    'style': TextStyle(color: Colors.purple),
+    'photo':
+    'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
+  },
+];
+List<Map<String, dynamic>> data2 = [
+  {
+    'id': '61as61fsa',
+    'display': 'Mohammed',
+    'full_name': 'Fayeed Pawaskar',
+    'photo':
+    'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
+  },
+  {
+    'id': '61asasgasgsag6a',
+    'display': 'Mohammed',
+    'full_name': 'DJ Khaled',
+    'style': TextStyle(color: Colors.purple),
+    'photo':
+    'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
+  },
+];

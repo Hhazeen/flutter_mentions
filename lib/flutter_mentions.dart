@@ -1,8 +1,12 @@
 library flutter_mentions;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+import 'package:mobx/mobx.dart';
 
 export 'package:flutter_portal/flutter_portal.dart';
 

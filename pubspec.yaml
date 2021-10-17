@@ -10,6 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_portal: ^0.4.0
+  flutter_mobx: any
+  mobx: any
 
 dev_dependencies:
   flutter_test:
