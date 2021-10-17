@@ -274,7 +274,7 @@ class FlutterMentionsState extends State<FlutterMentions> {
         );
       }
 
-      element.data.forEach(
+      listData.forEach(
         (e) => data["${element.trigger}${e['display']}"] = e['style'] != null
             ? Annotation(
                 style: e['style'],
@@ -389,6 +389,7 @@ class FlutterMentionsState extends State<FlutterMentions> {
       listData.clear();
       widget.fetchDataOnSearchTextChanged(str.substring(1)).then((value) {
         listData.addAll(value);
+        controller!.mapping = mapToAnotation();
         return value;
       });
     });
