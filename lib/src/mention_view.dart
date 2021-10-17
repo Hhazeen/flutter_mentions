@@ -256,6 +256,7 @@ class FlutterMentionsState extends State<FlutterMentions> {
   String _pattern = '';
   final ObservableList<Map<String, dynamic>> listData = ObservableList<Map<String, dynamic>>();
   Timer? timer;
+  Observable<bool> showLoading = Observable(false);
 
   Map<String, Annotation> mapToAnotation() {
     final data = <String, Annotation>{};
@@ -387,13 +388,17 @@ class FlutterMentionsState extends State<FlutterMentions> {
     setState(() {
       final str = _selectedMention!.str.toLowerCase();
       listData.clear();
+      changeLoadingState(true);
       widget.fetchDataOnSearchTextChanged(str.substring(1)).then((value) {
         listData.addAll(value);
+        changeLoadingState(false);
         controller!.mapping = mapToAnotation();
         return value;
       });
     });
   }
+
+  void changeLoadingState(bool newValue) => runInAction(() => showLoading.value = newValue);
 
   @override
   void initState() {
@@ -444,7 +449,23 @@ class FlutterMentionsState extends State<FlutterMentions> {
         childAnchor: widget.suggestionPosition == SuggestionPosition.Bottom
             ? Alignment.bottomCenter
             : Alignment.topCenter,
-        portal: ValueListenableBuilder(
+        closeDuration: Duration(milliseconds: 500),
+        portal: Observer(builder: (context) => Visibility(
+          visible: !showLoading.value,
+            replacement: Container(
+              decoration:
+              widget.suggestionListDecoration ?? BoxDecoration(color: Colors.white),
+              height: 70,
+              width: double.infinity,
+              child: Center(
+                child: SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: CircularProgressIndicator(),
+                )
+              ),
+            ),
+            child: ValueListenableBuilder(
           valueListenable: showSuggestions,
           builder: (BuildContext context, bool show, Widget? child) {
             return show && !widget.hideSuggestionList
@@ -467,7 +488,7 @@ class FlutterMentionsState extends State<FlutterMentions> {
             ))
                 : Container();
           },
-        ),
+        ))),
         child: Row(
           children: [
             ...widget.leading,
