@@ -123,6 +123,7 @@ List<Map<String, dynamic>> data1 = [
     'id': '61as61fsa',
     'display': 'Hamza',
     'full_name': 'Fayeed Pawaskar',
+    "style" : TextStyle(color: Colors.blue),
     'photo':
     'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
   },
@@ -130,7 +131,7 @@ List<Map<String, dynamic>> data1 = [
     'id': '61asasgasgsag6a',
     'display': 'Hamza',
     'full_name': 'DJ Khaled',
-    'style': TextStyle(color: Colors.purple),
+    "style" : TextStyle(color: Colors.blue),
     'photo':
     'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
   },
@@ -140,6 +141,7 @@ List<Map<String, dynamic>> data2 = [
     'id': '61as61fsa',
     'display': 'Mohammed',
     'full_name': 'Fayeed Pawaskar',
+    "style" : TextStyle(color: Colors.blue),
     'photo':
     'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
   },
@@ -147,7 +149,7 @@ List<Map<String, dynamic>> data2 = [
     'id': '61asasgasgsag6a',
     'display': 'Mohammed',
     'full_name': 'DJ Khaled',
-    'style': TextStyle(color: Colors.purple),
+    "style" : TextStyle(color: Colors.blue),
     'photo':
     'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
   },

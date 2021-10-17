@@ -256,6 +256,7 @@ class FlutterMentionsState extends State<FlutterMentions> {
   String _pattern = '';
   final ObservableList<Map<String, dynamic>> listData =
       ObservableList<Map<String, dynamic>>();
+  List<Map<String, dynamic>> selectedData = [];
   Timer? timer;
   Observable<bool> showLoading = Observable(false);
 
@@ -294,6 +295,26 @@ class FlutterMentionsState extends State<FlutterMentions> {
                 disableMarkup: element.disableMarkup,
                 markupBuilder: element.markupBuilder,
               ),
+      );
+
+      selectedData.forEach(
+            (e) => data["${element.trigger}${e['display']}"] = e['style'] != null
+            ? Annotation(
+          style: e['style'],
+          id: e['id'],
+          display: e['display'],
+          trigger: element.trigger,
+          disableMarkup: element.disableMarkup,
+          markupBuilder: element.markupBuilder,
+        )
+            : Annotation(
+          style: element.style,
+          id: e['id'],
+          display: e['display'],
+          trigger: element.trigger,
+          disableMarkup: element.disableMarkup,
+          markupBuilder: element.markupBuilder,
+        ),
       );
     });
 
@@ -393,7 +414,7 @@ class FlutterMentionsState extends State<FlutterMentions> {
       widget.fetchDataOnSearchTextChanged(str.substring(1)).then((value) {
         listData.addAll(value);
         changeLoadingState(false);
-        controller!.mapping.addAll(mapToAnotation());
+        controller!.mapping = mapToAnotation();
         return value;
       });
     });
@@ -489,7 +510,9 @@ class FlutterMentionsState extends State<FlutterMentions> {
                                   }).toList(),
                                   onTap: (value) {
                                     addMention(value, list);
+                                    selectedData.add(value);
                                     showSuggestions.value = false;
+                                    listData.clear();
                                   },
                                 ))
                         : Container();
