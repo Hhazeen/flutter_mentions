@@ -38,69 +38,72 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title!),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          RaisedButton(
-            child: Text('Get Text'),
-            onPressed: () {
-              print(key.currentState!.controller!.markupText);
-            },
-          ),
-          Container(
-            child: FlutterMentions(
-              key: key,
-              fetchDataOnSearchTextChanged: fetchData,
-              suggestionPosition: SuggestionPosition.Top,
-              maxLines: 5,
-              minLines: 1,
-              decoration: InputDecoration(hintText: 'hello'),
-              mentions: [
-                Mention(
-                    trigger: '@',
-                    style: TextStyle(
-                      color: Colors.amber,
-                    ),
-                    matchAll: false,
-                    suggestionBuilder: (data) {
-                      return Container(
-                        padding: EdgeInsets.all(10.0),
-                        child: Row(
-                          children: <Widget>[
-                            CircleAvatar(
-                              backgroundImage: NetworkImage(
-                                data['photo'],
-                              ),
-                            ),
-                            SizedBox(
-                              width: 20.0,
-                            ),
-                            Column(
-                              children: <Widget>[
-                                Text(data['full_name']),
-                                Text('@${data['display']}'),
-                              ],
-                            )
-                          ],
-                        ),
-                      );
-                    }),
-                Mention(
-                  trigger: '#',
-                  disableMarkup: true,
-                  style: TextStyle(
-                    color: Colors.blue,
-                  ),
-                  data: [
-                    {'id': 'reactjs', 'display': 'reactjs'},
-                    {'id': 'javascript', 'display': 'javascript'},
-                  ],
-                  matchAll: true,
-                )
-              ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            RaisedButton(
+              child: Text('Get Text'),
+              onPressed: () {
+                print(key.currentState!.controller!.markupText);
+              },
             ),
-          ),
-        ],
+            Container(
+              child: FlutterMentions(
+                key: key,
+                fetchDataOnSearchTextChanged: fetchData,
+                suggestionPosition: SuggestionPosition.Bottom,
+                maxLines: 5,
+                minLines: 1,
+                decoration: InputDecoration(hintText: 'hello'),
+                mentions: [
+                  Mention(
+                      trigger: '@',
+                      style: TextStyle(
+                        color: Colors.amber,
+                      ),
+                      matchAll: false,
+                      suggestionBuilder: (data) {
+                        return Container(
+                          padding: EdgeInsets.all(10.0),
+                          child: Row(
+                            children: <Widget>[
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                  data['photo'],
+                                ),
+                              ),
+                              SizedBox(
+                                width: 20.0,
+                              ),
+                              Column(
+                                children: <Widget>[
+                                  Text(data['full_name']),
+                                  Text('@${data['display']}'),
+                                ],
+                              )
+                            ],
+                          ),
+                        );
+                      }),
+                  Mention(
+                    trigger: '#',
+                    disableMarkup: true,
+                    style: TextStyle(
+                      color: Colors.blue,
+                    ),
+                    data: [
+                      {'id': 'reactjs', 'display': 'reactjs'},
+                      {'id': 'javascript', 'display': 'javascript'},
+                    ],
+                    matchAll: true,
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -259,6 +259,9 @@ class FlutterMentionsState extends State<FlutterMentions> {
   List<Map<String, dynamic>> selectedData = [];
   Timer? timer;
   Observable<bool> showLoading = Observable(false);
+  OverlayEntry? _overlayEntry;
+  final LayerLink _layerLink = LayerLink();
+  Mention? tempList;
 
   Map<String, Annotation> mapToAnotation() {
     final data = <String, Annotation>{};
@@ -298,23 +301,23 @@ class FlutterMentionsState extends State<FlutterMentions> {
       );
 
       selectedData.forEach(
-            (e) => data["${element.trigger}${e['display']}"] = e['style'] != null
+        (e) => data["${element.trigger}${e['display']}"] = e['style'] != null
             ? Annotation(
-          style: e['style'],
-          id: e['id'],
-          display: e['display'],
-          trigger: element.trigger,
-          disableMarkup: element.disableMarkup,
-          markupBuilder: element.markupBuilder,
-        )
+                style: e['style'],
+                id: e['id'],
+                display: e['display'],
+                trigger: element.trigger,
+                disableMarkup: element.disableMarkup,
+                markupBuilder: element.markupBuilder,
+              )
             : Annotation(
-          style: element.style,
-          id: e['id'],
-          display: e['display'],
-          trigger: element.trigger,
-          disableMarkup: element.disableMarkup,
-          markupBuilder: element.markupBuilder,
-        ),
+                style: element.style,
+                id: e['id'],
+                display: e['display'],
+                trigger: element.trigger,
+                disableMarkup: element.disableMarkup,
+                markupBuilder: element.markupBuilder,
+              ),
       );
     });
 
@@ -372,6 +375,12 @@ class FlutterMentionsState extends State<FlutterMentions> {
       });
 
       showSuggestions.value = val != -1;
+      if (showSuggestions.value) {
+        _overlayEntry = _createOverlayEntry();
+        Overlay.of(context)!.insert(_overlayEntry!);
+      } else {
+        _overlayEntry?.remove();
+      }
 
       if (widget.onSuggestionVisibleChanged != null) {
         widget.onSuggestionVisibleChanged!(val != -1);
@@ -456,68 +465,145 @@ class FlutterMentionsState extends State<FlutterMentions> {
     controller!.mapping = mapToAnotation();
   }
 
+  OverlayEntry _createOverlayEntry() {
+    var renderBox = context.findRenderObject() as RenderBox;
+    var size = renderBox.size;
+
+    return OverlayEntry(
+        builder: (context) => Positioned(
+              width: size.width,
+              // bottom: size.height,
+              child: CompositedTransformFollower(
+                link: _layerLink,
+                showWhenUnlinked: false,
+                followerAnchor:
+                    widget.suggestionPosition == SuggestionPosition.Top
+                        ? Alignment.bottomCenter
+                        : Alignment.topCenter,
+                targetAnchor:
+                    widget.suggestionPosition == SuggestionPosition.Top
+                        ? Alignment.topCenter
+                        : Alignment.bottomCenter,
+                child: Material(
+                  child: Observer(
+                      builder: (context) => Visibility(
+                          visible: !showLoading.value,
+                          replacement: Container(
+                              decoration: widget.suggestionListDecoration ??
+                                  BoxDecoration(color: Colors.white),
+                              height: 50,
+                              width: double.infinity,
+                              child: Center(
+                                  child: SizedBox(
+                                      width: 25,
+                                      height: 25,
+                                      child: CircularProgressIndicator(
+                                          strokeWidth: 2)))),
+                          child: ValueListenableBuilder(
+                            valueListenable: showSuggestions,
+                            builder: (BuildContext context, bool show,
+                                Widget? child) {
+                              return show && !widget.hideSuggestionList
+                                  ? Observer(
+                                      builder: (context) => OptionList(
+                                            suggestionListHeight:
+                                                widget.suggestionListHeight,
+                                            suggestionBuilder:
+                                                tempList!.suggestionBuilder,
+                                            suggestionListDecoration:
+                                                widget.suggestionListDecoration,
+                                            data: listData.where((element) {
+                                              final ele = element['display']
+                                                  .toLowerCase();
+                                              final str = _selectedMention!.str
+                                                  .toLowerCase()
+                                                  .replaceAll(
+                                                      RegExp(_pattern), '');
+
+                                              return ele == str
+                                                  ? false
+                                                  : ele.contains(str);
+                                            }).toList(),
+                                            onTap: (value) {
+                                              addMention(value, tempList);
+                                              selectedData.add(value);
+                                              showSuggestions.value = false;
+                                              _overlayEntry!.remove();
+                                              listData.clear();
+                                            },
+                                          ))
+                                  : Container();
+                            },
+                          ))),
+                ),
+              ),
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
     // Filter the list based on the selection
-    final list = _selectedMention != null
+    tempList = _selectedMention != null
         ? widget.mentions.firstWhere(
             (element) => _selectedMention!.str.contains(element.trigger))
         : widget.mentions[0];
 
     return Container(
-      child: PortalEntry(
-        portalAnchor: widget.suggestionPosition == SuggestionPosition.Bottom
-            ? Alignment.topCenter
-            : Alignment.bottomCenter,
-        childAnchor: widget.suggestionPosition == SuggestionPosition.Bottom
-            ? Alignment.bottomCenter
-            : Alignment.topCenter,
-        closeDuration: Duration(milliseconds: 500),
-        portal: Observer(
-            builder: (context) => Visibility(
-                visible: !showLoading.value,
-                replacement: Container(
-                    decoration: widget.suggestionListDecoration ??
-                        BoxDecoration(color: Colors.white),
-                    height: 50,
-                    width: double.infinity,
-                    child: Center(
-                        child: SizedBox(
-                            width: 25,
-                            height: 25,
-                            child: CircularProgressIndicator(strokeWidth: 2)))),
-                child: ValueListenableBuilder(
-                  valueListenable: showSuggestions,
-                  builder: (BuildContext context, bool show, Widget? child) {
-                    return show && !widget.hideSuggestionList
-                        ? Observer(
-                            builder: (context) => OptionList(
-                                  suggestionListHeight:
-                                      widget.suggestionListHeight,
-                                  suggestionBuilder: list.suggestionBuilder,
-                                  suggestionListDecoration:
-                                      widget.suggestionListDecoration,
-                                  data: listData.where((element) {
-                                    final ele =
-                                        element['display'].toLowerCase();
-                                    final str = _selectedMention!.str
-                                        .toLowerCase()
-                                        .replaceAll(RegExp(_pattern), '');
-
-                                    return ele == str
-                                        ? false
-                                        : ele.contains(str);
-                                  }).toList(),
-                                  onTap: (value) {
-                                    addMention(value, list);
-                                    selectedData.add(value);
-                                    showSuggestions.value = false;
-                                    listData.clear();
-                                  },
-                                ))
-                        : Container();
-                  },
-                ))),
+      // child: PortalEntry(
+      //   portalAnchor: widget.suggestionPosition == SuggestionPosition.Bottom
+      //       ? Alignment.topCenter
+      //       : Alignment.bottomCenter,
+      //   childAnchor: widget.suggestionPosition == SuggestionPosition.Bottom
+      //       ? Alignment.bottomCenter
+      //       : Alignment.topCenter,
+      //   closeDuration: Duration(milliseconds: 500),
+      // portal: Observer(
+      //     builder: (context) => Visibility(
+      //         visible: !showLoading.value,
+      //         replacement: Container(
+      //             decoration: widget.suggestionListDecoration ??
+      //                 BoxDecoration(color: Colors.white),
+      //             height: 50,
+      //             width: double.infinity,
+      //             child: Center(
+      //                 child: SizedBox(
+      //                     width: 25,
+      //                     height: 25,
+      //                     child: CircularProgressIndicator(strokeWidth: 2)))),
+      //         child: ValueListenableBuilder(
+      //           valueListenable: showSuggestions,
+      //           builder: (BuildContext context, bool show, Widget? child) {
+      //             return show && !widget.hideSuggestionList
+      //                 ? Observer(
+      //                     builder: (context) => OptionList(
+      //                           suggestionListHeight:
+      //                               widget.suggestionListHeight,
+      //                           suggestionBuilder: list.suggestionBuilder,
+      //                           suggestionListDecoration:
+      //                               widget.suggestionListDecoration,
+      //                           data: listData.where((element) {
+      //                             final ele =
+      //                                 element['display'].toLowerCase();
+      //                             final str = _selectedMention!.str
+      //                                 .toLowerCase()
+      //                                 .replaceAll(RegExp(_pattern), '');
+      //
+      //                             return ele == str
+      //                                 ? false
+      //                                 : ele.contains(str);
+      //                           }).toList(),
+      //                           onTap: (value) {
+      //                             addMention(value, list);
+      //                             selectedData.add(value);
+      //                             showSuggestions.value = false;
+      //                             listData.clear();
+      //                           },
+      //                         ))
+      //                 : Container();
+      //           },
+      //         ))),
+      child: CompositedTransformTarget(
+        link: _layerLink,
         child: Row(
           children: [
             ...widget.leading,
@@ -562,6 +648,7 @@ class FlutterMentionsState extends State<FlutterMentions> {
           ],
         ),
       ),
+      // ),
     );
   }
 }
