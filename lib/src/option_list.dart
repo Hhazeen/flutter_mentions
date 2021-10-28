@@ -31,6 +31,7 @@ class OptionList extends StatelessWidget {
             ),
             child: ListView.builder(
               itemCount: data.length,
+              padding: EdgeInsets.zero,
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return GestureDetector(
