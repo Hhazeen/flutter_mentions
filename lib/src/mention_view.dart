@@ -325,6 +325,7 @@ class FlutterMentionsState extends State<FlutterMentions> {
   }
 
   void addMention(Map<String, dynamic> value, [Mention? list]) {
+    selectedData.add(value);
     final selectedMention = _selectedMention!;
 
     setState(() {
@@ -526,7 +527,6 @@ class FlutterMentionsState extends State<FlutterMentions> {
                                             }).toList(),
                                             onTap: (value) {
                                               addMention(value, tempList);
-                                              selectedData.add(value);
                                               showSuggestions.value = false;
                                               _overlayEntry!.remove();
                                               listData.clear();
