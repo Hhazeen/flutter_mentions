@@ -326,6 +326,7 @@ class FlutterMentionsState extends State<FlutterMentions> {
 
   void addSpecificMention(Map<String, dynamic> data, String display) {
     controller!.text = '@$display';
+    if (widget.appendSpaceOnAdd) controller!.text+= ' ';
     selectedData.add(data);
     controller!.mapping = mapToAnotation();
     var nextCursorPosition =
