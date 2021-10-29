@@ -392,11 +392,9 @@ class FlutterMentionsState extends State<FlutterMentions> {
         _overlayEntry = _createOverlayEntry();
         Overlay.of(context)!.insert(_overlayEntry!);
       } else {
-        if(_overlayEntry != null) {
           try{
             _overlayEntry!.remove();
           } catch(e){}
-        }
       }
 
       if (widget.onSuggestionVisibleChanged != null) {
@@ -434,7 +432,10 @@ class FlutterMentionsState extends State<FlutterMentions> {
 
   void updateData() {
     setState(() {
-      final str = _selectedMention!.str.toLowerCase();
+      final str = _selectedMention?.str.toLowerCase();
+      if(str == null) {
+        return;
+      }
       listData.clear();
       changeLoadingState(true);
       widget.fetchDataOnSearchTextChanged(str.substring(1)).then((value) {
@@ -544,9 +545,9 @@ class FlutterMentionsState extends State<FlutterMentions> {
                                             onTap: (value) {
                                               addMention(value, tempList);
                                               showSuggestions.value = false;
-                                              if(_overlayEntry != null) {
-                                                _overlayEntry!.remove();
-                                              }
+                                                try{
+                                                  _overlayEntry!.remove();
+                                                } catch(e){}
                                               listData.clear();
                                             },
                                           ))
