@@ -393,7 +393,9 @@ class FlutterMentionsState extends State<FlutterMentions> {
         Overlay.of(context)!.insert(_overlayEntry!);
       } else {
         if(_overlayEntry != null) {
-          _overlayEntry!.remove();
+          try{
+            _overlayEntry!.remove();
+          } catch(e){}
         }
       }
 
