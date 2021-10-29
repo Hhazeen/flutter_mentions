@@ -324,6 +324,12 @@ class FlutterMentionsState extends State<FlutterMentions> {
     return data;
   }
 
+  void addSpecificMention(Map<String, dynamic> data, String display) {
+    controller!.text = '@$display';
+    suggestionListerner();
+    addMention(data);
+  }
+
   void addMention(Map<String, dynamic> value, [Mention? list]) {
     selectedData.add(value);
     final selectedMention = _selectedMention!;
