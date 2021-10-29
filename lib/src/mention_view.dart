@@ -392,7 +392,9 @@ class FlutterMentionsState extends State<FlutterMentions> {
         _overlayEntry = _createOverlayEntry();
         Overlay.of(context)!.insert(_overlayEntry!);
       } else {
-        _overlayEntry?.remove();
+        if(_overlayEntry != null) {
+          _overlayEntry!.remove();
+        }
       }
 
       if (widget.onSuggestionVisibleChanged != null) {
@@ -540,7 +542,9 @@ class FlutterMentionsState extends State<FlutterMentions> {
                                             onTap: (value) {
                                               addMention(value, tempList);
                                               showSuggestions.value = false;
-                                              _overlayEntry!.remove();
+                                              if(_overlayEntry != null) {
+                                                _overlayEntry!.remove();
+                                              }
                                               listData.clear();
                                             },
                                           ))
