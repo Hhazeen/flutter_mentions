@@ -328,6 +328,11 @@ class FlutterMentionsState extends State<FlutterMentions> {
     controller!.text = '@$display';
     selectedData.add(data);
     controller!.mapping = mapToAnotation();
+    var nextCursorPosition =
+         1 + display.length;
+    if (widget.appendSpaceOnAdd) nextCursorPosition++;
+    controller!.selection =
+        TextSelection.fromPosition(TextPosition(offset: nextCursorPosition));
   }
 
   void addMention(Map<String, dynamic> value, [Mention? list]) {
