@@ -366,10 +366,13 @@ class FlutterMentionsState extends State<FlutterMentions> {
 
   void suggestionListerner() {
     final cursorPos = controller!.selection.baseOffset;
-
     if (cursorPos >= 0) {
+      if(cursorPos > 0 && controller!.text[cursorPos - 1] == '@') {
+        if(tempList != null && tempList!.data.isNotEmpty) {
+          tempList!.data.clear();
+        }
+      }
       var _pos = 0;
-
       final lengthMap = <LengthMap>[];
 
       // split on each word and generate a list with start & end position of each word.
@@ -527,7 +530,7 @@ class FlutterMentionsState extends State<FlutterMentions> {
                                             suggestionListHeight:
                                                 widget.suggestionListHeight,
                                             suggestionBuilder:
-                                                tempList!.suggestionBuilder,
+                                                tempList?.suggestionBuilder,
                                             suggestionListDecoration:
                                                 widget.suggestionListDecoration,
                                             data: listData.where((element) {
