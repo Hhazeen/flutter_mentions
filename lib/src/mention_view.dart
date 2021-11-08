@@ -367,11 +367,6 @@ class FlutterMentionsState extends State<FlutterMentions> {
   void suggestionListerner() {
     final cursorPos = controller!.selection.baseOffset;
     if (cursorPos >= 0) {
-      if(cursorPos > 0 && controller!.text[cursorPos - 1] == '@') {
-        if(tempList != null && tempList!.data.isNotEmpty) {
-          tempList!.data.clear();
-        }
-      }
       var _pos = 0;
       final lengthMap = <LengthMap>[];
 
@@ -411,6 +406,10 @@ class FlutterMentionsState extends State<FlutterMentions> {
   }
 
   void inputListeners() {
+    final cursorPos = controller!.selection.baseOffset;
+    if(cursorPos > 0 && controller!.text[cursorPos - 1] == '@'){
+      showSuggestions.value = false;
+    }
     if (widget.onChanged != null) {
       widget.onChanged!(controller!.text);
     }
