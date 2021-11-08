@@ -505,6 +505,8 @@ class FlutterMentionsState extends State<FlutterMentions> {
                         ? Alignment.topCenter
                         : Alignment.bottomCenter,
                 child: Material(
+                  color: Colors.transparent,
+                  borderRadius: widget.suggestionListDecoration?.borderRadius,
                   child: Observer(
                       builder: (context) => Visibility(
                           visible: !showLoading.value,
